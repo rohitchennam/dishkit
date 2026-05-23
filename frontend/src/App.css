@@ -1,0 +1,140 @@
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f5f0;
+  color: #1a1a1a;
+}
+
+.app { min-height: 100vh; }
+
+.header {
+  background: #1a1a1a;
+  color: white;
+  padding: 24px 32px;
+}
+
+.header h1 { font-size: 28px; font-weight: 700; }
+.header p  { margin-top: 4px; color: #aaa; font-size: 15px; }
+
+.main { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+
+.success-box {
+  background: white;
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+}
+
+.success-box h2 { font-size: 28px; margin-bottom: 12px; }
+.success-box p  { color: #555; margin-bottom: 8px; }
+
+button {
+  margin-top: 24px;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover { background: #333; } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.header {
+  background: #1a1a1a;
+  color: white;
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left h1  { font-size: 26px; font-weight: 700; }
+.header-left p   { margin-top: 2px; color: #aaa; font-size: 14px; }
+
+.header-right { display: flex; gap: 10px; align-items: center; }
+
+.cart-btn {
+  background: #10b981; color: white;
+  border: none; padding: 10px 18px;
+  border-radius: 20px; font-size: 14px;
+  font-weight: 700; cursor: pointer; margin-top: 0;
+}
+
+.history-btn {
+  background: transparent; color: #aaa;
+  border: 1px solid #444; padding: 8px 16px;
+  border-radius: 20px; font-size: 14px;
+  cursor: pointer; margin-top: 0;
+}
+.history-btn:hover { color: white; border-color: #888; background: transparent; }
+
+.confirmation {
+  background: white; border-radius: 16px;
+  padding: 40px 32px; text-align: center;
+}
+.confirm-icon { font-size: 48px; margin-bottom: 16px; }
+.confirmation h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.confirm-sub { color: #888; margin-bottom: 28px; }
+
+.confirm-items {
+  text-align: left; margin-bottom: 24px;
+  border: 1px solid #f0f0f0; border-radius: 12px; overflow: hidden;
+}
+.confirm-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid #f5f5f5;
+}
+.confirm-item:last-child { border-bottom: none; }
+.confirm-emoji { font-size: 28px; }
+.confirm-item-info { flex: 1; text-align: left; }
+.confirm-item-info strong { display: block; font-size: 15px; }
+.confirm-item-info span  { font-size: 13px; color: #888; }
+.confirm-item-price { font-weight: 700; font-size: 15px; }
+
+.confirm-ingredients {
+  background: #f9f9f6; border-radius: 12px;
+  padding: 20px; text-align: left; margin-bottom: 20px;
+}
+.confirm-ingredients h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.ing-group { margin-bottom: 16px; }
+.ing-group-dish { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.ing-row {
+  display: flex; justify-content: space-between;
+  font-size: 13px; padding: 5px 0;
+  border-bottom: 1px solid #efefea;
+}
+.ing-qty { color: #888; }
+
+.confirm-total {
+  font-size: 18px; margin-bottom: 24px; color: #555;
+}
+.confirm-total strong { color: #1a1a1a; font-size: 22px; }
