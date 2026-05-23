@@ -1,9 +1,10 @@
+const API = 'https://dishkit-backend.onrender.com'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import OrderCard from './components/OrderCard'
 import './App.css'
 
-const API = 'http://localhost:3000'
+// const API = 'http://localhost:3000'
 
 function App() {
   const [orders,  setOrders]  = useState([])
