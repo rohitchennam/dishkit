@@ -104,6 +104,120 @@ app.patch('/orders/:id/status', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }) }
 })
 
+// ── Admin: Dishes CRUD ──────────────────────────────
+app.post('/admin/dishes', async (req, res) => {
+  const { name, cuisine, meal_type, description, prep_time, cook_time, price, image_url } = req.body
+  if (!name || !price) return res.status(400).json({ error: 'Name and price required' })
+  try {
+    const result = await pool.query(`
+      INSERT INTO dishes (name, cuisine, meal_type, description, prep_time, cook_time, price, image_url)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *
+    `, [name, cuisine, meal_type, description, prep_time || 0, cook_time || 0, price, image_url || '🍽️'])
+    res.status(201).json(result.rows[0])
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+app.put('/admin/dishes/:id', async (req, res) => {
+  const { name, cuisine, meal_type, description, prep_time, cook_time, price, image_url, is_active } = req.body
+  try {
+    const result = await pool.query(`
+      UPDATE dishes SET
+        name = $1, cuisine = $2, meal_type = $3, description = $4,
+        prep_time = $5, cook_time = $6, price = $7, image_url = $8, is_active = $9
+      WHERE id = $10 RETURNING *
+    `, [name, cuisine, meal_type, description, prep_time, cook_time, price, image_url, is_active, req.params.id])
+    if (!result.rows.length) return res.status(404).json({ error: 'Dish not found' })
+    res.json(result.rows[0])
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+app.delete('/admin/dishes/:id', async (req, res) => {
+  try {
+    await pool.query('UPDATE dishes SET is_active = false WHERE id = $1', [req.params.id])
+    res.json({ success: true })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+// ── Admin: Ingredients ──────────────────────────────
+app.get('/admin/ingredients', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM ingredients ORDER BY name ASC')
+    res.json(result.rows)
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+app.post('/admin/ingredients', async (req, res) => {
+  const { name, unit } = req.body
+  if (!name || !unit) return res.status(400).json({ error: 'Name and unit required' })
+  try {
+    const result = await pool.query(
+      'INSERT INTO ingredients (name, unit) VALUES ($1, $2) RETURNING *', [name, unit]
+    )
+    res.status(201).json(result.rows[0])
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+app.post('/admin/dishes/:id/ingredients', async (req, res) => {
+  const { ingredient_id, quantity_per_serving } = req.body
+  try {
+    const result = await pool.query(`
+      INSERT INTO dish_ingredients (dish_id, ingredient_id, quantity_per_serving)
+      VALUES ($1, $2, $3) RETURNING *
+    `, [req.params.id, ingredient_id, quantity_per_serving])
+    res.status(201).json(result.rows[0])
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+app.delete('/admin/dish-ingredients/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM dish_ingredients WHERE id = $1', [req.params.id])
+    res.json({ success: true })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
+// ── Admin: Analytics ──────────────────────────────
+app.get('/admin/analytics', async (req, res) => {
+  try {
+    const topDishes = await pool.query(`
+      SELECT d.name, d.image_url, COUNT(oi.id) as order_count, SUM(oi.servings) as total_servings
+      FROM order_items oi
+      JOIN dishes d ON d.id = oi.dish_id
+      GROUP BY d.id, d.name, d.image_url
+      ORDER BY order_count DESC
+      LIMIT 5
+    `)
+
+    const orderStats = await pool.query(`
+      SELECT
+        COUNT(*) as total_orders,
+        COALESCE(SUM(total_amount), 0) as total_revenue,
+        COALESCE(AVG(total_amount), 0) as avg_order_value
+      FROM orders
+    `)
+
+    const statusBreakdown = await pool.query(`
+      SELECT status, COUNT(*) as count
+      FROM orders
+      GROUP BY status
+    `)
+
+    const ordersByDay = await pool.query(`
+      SELECT DATE(created_at) as day, COUNT(*) as count, COALESCE(SUM(total_amount), 0) as revenue
+      FROM orders
+      WHERE created_at > NOW() - INTERVAL '7 days'
+      GROUP BY DATE(created_at)
+      ORDER BY day ASC
+    `)
+
+    res.json({
+      topDishes: topDishes.rows,
+      stats: orderStats.rows[0],
+      statusBreakdown: statusBreakdown.rows,
+      ordersByDay: ordersByDay.rows
+    })
+  } catch (err) { res.status(500).json({ error: err.message }) }
+})
+
 // ── Helper ───────────────────────────────────────────
 async function getFullOrder(orderId) {
   const order = await pool.query('SELECT * FROM orders WHERE id = $1', [orderId])
